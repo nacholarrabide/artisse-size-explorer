@@ -3,10 +3,11 @@
 Quiero integrar el prototipo Contour Explorer en el proyecto AngioSeg.
 El destino previsto en la conversación es el dominio existente, mediante la ruta:
 
-https://angioseg.arroyoseco.tech/contour.html
+https://angioseg.arroyoseco.tech/contour/
 
-Podés usar /contour/ como alias con redirección. No crear un subdominio ni un
-alojamiento nuevo. El dominio ya llega a esta máquina mediante un reverse proxy;
+Redirigí /contour a /contour/. Si conservás /contour.html o
+/contour/contour.html como alias, redirigilos a la ruta canónica sin saltarse
+la autenticación. No crear un subdominio ni un alojamiento nuevo. El dominio ya llega a esta máquina mediante un reverse proxy;
 identificá primero la configuración ACTIVA, sin asumir que el nginx del repo sea
 el que está en uso.
 
@@ -16,10 +17,18 @@ Inspeccioná su arquitectura y despliegue activos antes de elegir cómo servir e
 ## Fuente y alcance
 
 La fuente canónica es /home/nacho/devel/artisse_size_explorer/contour.html,
-repositorio git@github.com:nacholarrabide/artisse-size-explorer.git. Usá el archivo
-actual confirmado y registrá commit y SHA-256 del archivo desplegado. No hagas
-pull ni descartes cambios locales sin inspeccionar antes el estado. Si la fuente
-no está disponible, pedime la ubicación; no reconstruyas ni reemplaces el modelo.
+repositorio git@github.com:nacholarrabide/artisse-size-explorer.git.
+Publicá esta instantánea de la primera versión de pruebas:
+
+- Modelo: contour-cup-0.4.
+- Commit fuente: 9cde2c156f58f1ab5d869cd6d5d772ee330ab4dd.
+- Archivo: contour.html.
+- SHA-256: fbcd605557249277ec44425e10665c3b7ad8d99ff733d189f0fd6bdce9036d5f.
+
+Verificá el checksum antes y después de copiarlo. Si el archivo de trabajo ya
+cambió, extraé esta versión desde Git a una carpeta temporal, sin hacer checkout,
+reset ni sobrescribir cambios locales. No reconstruyas ni reemplaces el modelo.
+Si esta instantánea no está disponible, informá el bloqueo y pedime su ubicación.
 
 Es un único HTML con CSS/JS/SVG embebidos, sin backend de cálculo, dependencias,
 GPU, base de datos o peticiones externas para funcionar. Tiene presets visuales,
@@ -68,6 +77,14 @@ que proxy, cookies, redirecciones y políticas de seguridad no anulan la protecc
 2. Proponé y ejecutá un cambio pequeño, reversible y registrado en el plan/etapa
    que exija el repositorio. Si FastAPI ya sirve el sitio, una ruta que entregue
    un FileResponse protegido puede ser suficiente; verificá el middleware real.
+   Organizá la copia desplegable en una subcarpeta contour de los recursos del
+   proyecto, pero fuera de cualquier montaje estático público si la ruta requiere
+   sesión. Comprobá precedencia frente al fallback de la SPA: /contour/ debe
+   devolver el explorer, no el index de AngioSeg. No depender del servidor local
+   temporal del puerto 8770. Usá el servicio persistente existente.
+   Agregá un enlace “Contour Explorer · Experimental” en la navegación del equipo
+   autorizado. Abrir el enlace directamente y recargar /contour/ deben funcionar;
+   tras iniciar sesión, volver a esa ruta con un destino de redirección validado.
 3. Revisá CSP para el HTML autocontenido, sin relajar globalmente las protecciones
    del proyecto. No añadir servicios públicos de desarrollo ni exponer nuevos
    puertos a Internet. No tocar inferencia, GPU, datasets ni módulos del motor.
@@ -90,7 +107,10 @@ que proxy, cookies, redirecciones y políticas de seguridad no anulan la protecc
    del saco, y ambas deben mostrar “Pole C” con su talla. No ocultar conflictos
    para aparentar un ajuste. Confirmá que los experimentos
    funcionan en el navegador sin enviar sus datos al servidor.
-7. Comprobá que login, interfaz y salud del proyecto siguen funcionando. Registrá
+7. Verificá que el service worker y las cachés no sirvan otra versión ni guarden
+   el HTML protegido para usuarios sin acceso. Documentá cómo actualizar la copia
+   desde un nuevo commit explícito y cómo comprobar la versión que se sirve.
+8. Comprobá que login, interfaz y salud del proyecto siguen funcionando. Registrá
    versión desplegada, checksum, URL, política de acceso, pruebas y rollback.
    Hacé commit/push según las instrucciones del repo destino. Si una comprobación
    externa no es posible, indicá qué quedó sin verificar; no declares éxito total.
