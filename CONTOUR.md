@@ -1,4 +1,4 @@
-# Contour geometry explorer v0.2
+# Contour geometry explorer v0.3
 
 Open `contour.html` directly in a browser (offline), or serve this directory with
 `python3 -m http.server 8765 --bind 127.0.0.1` and visit `/contour.html`.
@@ -85,3 +85,27 @@ porosity or haemodynamics. Radial gaps and intersections in a symmetric section
 are not circumferential apposition, neck coverage, or stability measurements.
 Research/educational prototype; not validated for clinical use. Not affiliated
 with Stryker or Medtronic. No proprietary model parameters or patient data included.
+
+
+## v0.3 visibility, pole roundness and English UI
+
+All interface text, methods, SVG labels and runtime messages are in English.
+An undersized device is no longer hidden: the display wrapper returns its
+nominal-width, free-depth ellipse at the selected rim height, measuring each
+radial gap to the wall. The shape is evaluated against the actual sac, so a
+narrower lower wall can still intersect it. Fully intrasaccular cups stay visible.
+If the adapted search fails, a labelled reference ellipse is displayed instead;
+its warnings and exported metadata explicitly distinguish it from a contact
+solution. The direct contact solver still reports infeasibility.
+
+Contact caps now require pole curvature radius rho=2*controlR^2/depth >= an
+editable bound, default 0.10 mm (range 0.02–0.50 mm). Horizontal tangent alone
+was insufficient: nearly zero controlR produced a visually sharp tip nearby.
+The default bound gives roughly 75–80% wall descent for the default anatomy;
+this is a synthetic geometric setting, not a measured force or universal
+contact percentage. This bound applies to the adapted cap, not reference
+ellipses. v0.1 and v0.2 scenarios remain importable; v0.2 imports receive the
+new default roundness setting. Exports use model version contour-cup-0.3.
+
+Additional tests cover undersized silhouettes, gap measurements, fully internal
+cups, visible search-failure fallbacks and several curvature bounds.

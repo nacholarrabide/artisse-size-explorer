@@ -21,7 +21,7 @@ let checked=0;
 for(const size of [5,7,9,11,14])for(const ratio of [.15,.35,.65])for(const turns of [0,.5,1.5])for(const width of [2,3,5,7,10,12]){
  const s={...DEFAULTS,size,ratio,turns,width,neck:Math.min(width,4.5)};
  const c=solveCup(s,size);
- if(width>size){assert.equal(c.ok,false);continue;}
+ if(width>size){assert.equal(c.ok,true);assert.equal(c.reference,true);near(c.R,size/2);near(c.h,size*ratio);near(c.rimGap,(width-size)/2);continue;}
  assert.ok(c.ok);assert.ok(c.relativeError<1e-10);assert.ok(c.h>=size*ratio-1e-8);
  assert.ok(c.points.every(p=>Number.isFinite(p.z)&&Number.isFinite(p.r)));checked++;
 }
@@ -47,7 +47,7 @@ console.log(`Contour: ${checked} feasible parameter combinations; geometry, coll
 const {solveContact,contactGeometry,contactLengths,wallSlope,readScenario}=ctx.api;
 let contactChecked=0;
 for(const changes of [{},{contactMin:100},{contactMin:80},{turns:0},
- {turns:1.5},{ratio:.15},{ratio:.65},{neck:6},{neck:1},
+ {turns:1.5},{ratio:.15},{ratio:.65},{neck:6},{neck:1,minPoleRadius:.02},
  {height:12,equator:8},{mode:'manual',rim:4},{mode:'manual',rim:1}]){
  const s={...ctx.api.DEFAULTS,...changes};
  const c=solveContact(s,s.size);
@@ -57,6 +57,7 @@ for(const changes of [{},{contactMin:100},{contactMin:80},{turns:0},
  near(fine.length,c.L0,2e-6);
  near(c.contactWire+c.freeWire,c.L0,1e-8);
  assert.ok(c.relativeError<1e-9);
+ assert.ok(c.poleRadius>=s.minPoleRadius);
  assert.ok(c.contactFraction>=s.contactMin/100-1e-8);
  assert.ok(c.penetration<=1e-6);
  near(g.wall(1).r,g.tail(0).r);near(g.wall(1).z,g.tail(0).z);
@@ -81,3 +82,32 @@ assert.throws(()=>readScenario({model:'future',units:'mm',parameters:DEFAULTS}))
 assert.throws(()=>validateState({...ctx.api.DEFAULTS,contactMin:101}));
 assert.throws(()=>validateState({...ctx.api.DEFAULTS,profile:'unknown'}));
 console.log(`Contact: ${contactChecked} scenarios passed fine integration, wall clearance, tangency, contact, and import migration checks.`);
+
+// Small cups remain visible and detached at the rim, including entirely
+// intrasaccular cases and the comparison solver path.
+for(const profile of ['ellipse','contact']){
+ const s={...ctx.api.DEFAULTS,profile,width:10,neck:9,height:10,equator:5};
+ const small=solveCup(s,5);
+ assert.ok(small.ok&&small.reference&&small.undersized);
+ assert.ok(small.pole>0);assert.equal(small.below,0);near(small.rimGap,2.5);
+ assert.ok(small.points.every(p=>p.r<radiusAt(p.z,s)));
+ near(small.h,5*s.ratio);assert.ok(small.relativeError<1e-10);
+}
+const fallback=solveCup({...ctx.api.DEFAULTS,width:3,neck:2,height:14,equator:13,contactMin:100},5);
+assert.ok(fallback.ok&&fallback.reference&&!fallback.undersized);
+assert.ok(fallback.referenceReason.includes('No adapted solution'));
+for(const minPoleRadius of [.02,.1,.3,.5]){
+ const s={...ctx.api.DEFAULTS,minPoleRadius};const c=solveContact(s,9);
+ assert.ok(c.ok);assert.ok(c.poleRadius>=minPoleRadius);
+ const g=contactGeometry(s,c.rim,c.detach,c.tailDepth);
+ near(g.tail(1).dz,0);assert.ok(g.tail(1).dr<0);
+ near(2*g.controlR*g.controlR/c.tailDepth,c.poleRadius);
+}
+const round=solveContact(ctx.api.DEFAULTS,9);
+assert.ok(round.contactFraction>=.75&&round.contactFraction<=.85);
+assert.throws(()=>validateState({...ctx.api.DEFAULTS,minPoleRadius:0}));
+assert.ok(html.includes('lang="en"'));
+console.log('Visibility, interior free cups, fallback silhouettes and minimum pole curvature checks passed.');
+
+assert.equal(solveContact({...ctx.api.DEFAULTS,neck:1},9).ok,false);
+assert.ok(solveCup({...ctx.api.DEFAULTS,neck:1},9).reference);
