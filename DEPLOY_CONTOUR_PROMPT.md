@@ -1,7 +1,7 @@
-# Prompt para Cursor en el proyecto que sirve angioseg.arroyoseco.tech
+# Prompt para Cursor: integrar Contour Explorer en AngioSeg
 
-Quiero desplegar el prototipo Contour Explorer en la misma máquina y dominio de
-Angioseg, mediante la ruta canónica:
+Quiero integrar el prototipo Contour Explorer en el proyecto AngioSeg.
+El destino previsto en la conversación es el dominio existente, mediante la ruta:
 
 https://angioseg.arroyoseco.tech/contour.html
 
@@ -9,6 +9,9 @@ Podés usar /contour/ como alias con redirección. No crear un subdominio ni un
 alojamiento nuevo. El dominio ya llega a esta máquina mediante un reverse proxy;
 identificá primero la configuración ACTIVA, sin asumir que el nginx del repo sea
 el que está en uso.
+
+El proyecto destino está confirmado: AngioSeg, en /home/nacho/devel/angioseg.
+Inspeccioná su arquitectura y despliegue activos antes de elegir cómo servir el HTML.
 
 ## Fuente y alcance
 
@@ -21,17 +24,21 @@ no está disponible, pedime la ubicación; no reconstruyas ni reemplaces el mode
 Es un único HTML con CSS/JS/SVG embebidos, sin backend de cálculo, dependencias,
 GPU, base de datos o peticiones externas para funcionar. Tiene presets visuales,
 comparaciones, banco de experimentos y exportación/importación local JSON/SVG.
+La apariencia usa como referencia los estilos locales de AngioSeg: fondo #0B1220,
+paneles #0F1A2E y #111E36, texto #EAF2FF, secundario #B9C7E6 y acento #16C6D2,
+con tipografía ui-sans-serif/system-ui y tarjetas redondeadas de 14 px. Confirmá
+los tokens del proyecto destino y mantené coherencia sin añadir fuentes remotas.
 Conservá la interfaz en inglés y todas las advertencias de modelo sintético no
 validado. No modificar las ecuaciones durante este despliegue.
 
-El código fuente se mantiene en su repo. En Angioseg, incorporá un procedimiento
+El código fuente se mantiene en su repo. En el proyecto destino, incorporá un procedimiento
 reproducible para copiar/publicar una versión explícita y verificar su checksum;
 no conviertas dos copias editables en fuentes divergentes. Serví exclusivamente
 el archivo necesario, nunca el checkout completo ni carpetas padre.
 
 ## Acceso
 
-Para este piloto de equipo, prepará la ruta con autenticación de Angioseg y una
+Para este piloto de equipo, prepará la ruta con autenticación existente del proyecto y una
 lista explícita de usuarios autorizados o un permiso equivalente. Un usuario
 registrado no implica automáticamente permiso para este prototipo. Reutilizá la
 sesión existente, sin crear un segundo sistema de contraseñas. Si faltan los
@@ -54,7 +61,7 @@ que proxy, cookies, redirecciones y políticas de seguridad no anulan la protecc
    que exija el repositorio. Si FastAPI ya sirve el sitio, una ruta que entregue
    un FileResponse protegido puede ser suficiente; verificá el middleware real.
 3. Revisá CSP para el HTML autocontenido, sin relajar globalmente las protecciones
-   de Angioseg. No añadir servicios públicos de desarrollo ni exponer nuevos
+   del proyecto. No añadir servicios públicos de desarrollo ni exponer nuevos
    puertos a Internet. No tocar inferencia, GPU, datasets ni módulos del motor.
 4. Prepará rollback del archivo y configuración. Ejecutá las pruebas exigidas por
    el proyecto y pruebas específicas de la ruta: anónimo sin HTML, usuario sin
@@ -65,10 +72,17 @@ que proxy, cookies, redirecciones y políticas de seguridad no anulan la protecc
    existente y recargá/reiniciá solo el servicio necesario. Verificá desde el
    dominio externo tanto acceso autorizado como denegado; una prueba localhost
    sola no confirma el despliegue externo.
-6. En navegador, verificá los tres presets (C5, C7, C9, sin comparación inicial), sliders,
-   adaptación de ambas copas, barridos, JSON y SVG. Confirmá que los experimentos
+6. En navegador, verificá este orden exacto de tarjetas:
+   - Near-unit aspect ratio: C9; ancho 8.4, altura 8, ecuador 4, cuello 4.5 mm.
+   - Ovoid sac: C7; ancho 6.4, altura 7.8, ecuador 3.9, cuello 4 mm.
+   - Tall sac: C5; ancho 4.2, altura 6.8, ecuador 3.4, cuello 2.2 mm.
+   Los presets no activan overlay y tienen el ecuador a media altura. Probá sliders,
+   comparación manual con otra talla, adaptación de ambas copas, barridos, JSON
+   y SVG. La copa comparada debe ser discontinua en todo su perfil, incluso fuera
+   del saco, y ambas deben mostrar “Pole C” con su talla. No ocultar conflictos
+   para aparentar un ajuste. Confirmá que los experimentos
    funcionan en el navegador sin enviar sus datos al servidor.
-7. Comprobá que login, interfaz y salud de Angioseg siguen funcionando. Registrá
+7. Comprobá que login, interfaz y salud del proyecto siguen funcionando. Registrá
    versión desplegada, checksum, URL, política de acceso, pruebas y rollback.
    Hacé commit/push según las instrucciones del repo destino. Si una comprobación
    externa no es posible, indicá qué quedó sin verificar; no declares éxito total.
@@ -81,5 +95,5 @@ ambos repositorios públicos y de las carpetas servidas. No cargar ni buscar eso
 datos para este despliegue. Los presets actuales son completamente sintéticos.
 
 Resultado esperado: una instalación reproducible, accesible al equipo autorizado
-mediante el dominio indicado, con el resto de Angioseg intacto y sin presentar el
+mediante el dominio indicado, con el resto del proyecto intacto y sin presentar el
 explorer como herramienta clínicamente validada.

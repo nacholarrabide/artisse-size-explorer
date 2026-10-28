@@ -140,13 +140,17 @@ data have been loaded, and the departure solver has not been altered by this ste
 ## Visual quick presets
 
 Three clickable SVG anatomy thumbnails sit above the main explorer. They reset
-model assumptions and turn comparison off, selecting C5, C7 and C9 respectively.
-Their width/height dimensions are 4.2/6.8, 6.4/7.8 and 8.4/8 mm; the equator is
-at half the sac height in all three. Neck widths remain 2.2, 4 and 4.5 mm.
+model assumptions and turn comparison off, selecting C9, C7 and C5 respectively (Near-unit, Ovoid, Tall).
+Their width/height dimensions are 8.4/8, 6.4/7.8 and 4.2/6.8 mm; the equator is
+at half the sac height in all three. Neck widths remain 4.5, 4 and 2.2 mm.
 These are synthetic exploration geometries, not selected fits: catalogue warnings,
 neck crossing and reference fallback remain visible when applicable. Comparisons
 can be enabled manually; both profiles are independently solved and the secondary
 profile stays dashed, including contact and conflict segments. Both poles are labelled.
 
-DEPLOY_CONTOUR_PROMPT.md contains a handoff prompt for the Angioseg project.
+DEPLOY_CONTOUR_PROMPT.md contains a handoff prompt for AngioSeg integration, with destination verification.
 No production deployment is performed by these changes.
+
+The dark palette follows local AngioSeg web/src/index.css tokens, with system
+sans typography matching its Tailwind sans default. No external fonts are loaded.
+The user confirmed AngioSeg as the destination project.
