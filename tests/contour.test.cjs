@@ -4,7 +4,7 @@ const assert = require('node:assert/strict');
 const html = fs.readFileSync('contour.html', 'utf8');
 const source = html.match(/<script id="geometry">([\s\S]*?)<\/script>/)[1];
 const ctx = vm.createContext({});
-vm.runInContext(source + '\nthis.api={radiusAt,wireLength,solveCup,validateState,catalogMatch,CATALOG,DEFAULTS,solveContact,contactGeometry,contactLengths,wallSlope,readScenario};', ctx);
+vm.runInContext(source + '\nthis.api={radiusAt,wireLength,solveCup,validateState,catalogMatch,CATALOG,DEFAULTS,solveContact,contactGeometry,contactLengths,wallSlope,readScenario,PRESETS,sweepRange,experimentResult};', ctx);
 const {radiusAt,wireLength,solveCup,validateState,catalogMatch,CATALOG} = ctx.api;
 const DEFAULTS={...ctx.api.DEFAULTS,profile:'ellipse'};
 const near=(a,b,tol=1e-8)=>assert.ok(Math.abs(a-b)<tol, `${a} != ${b}`);
@@ -111,3 +111,10 @@ console.log('Visibility, interior free cups, fallback silhouettes and minimum po
 
 assert.equal(solveContact({...ctx.api.DEFAULTS,neck:1},9).ok,false);
 assert.ok(solveCup({...ctx.api.DEFAULTS,neck:1},9).reference);
+
+for(const patch of Object.values(ctx.api.PRESETS))validateState({...ctx.api.DEFAULTS,...patch});
+assert.equal(validateState({...ctx.api.DEFAULTS,compare:-1}).compare,-1);
+const bounds=ctx.api.sweepRange(ctx.api.DEFAULTS,'neck');near(bounds[1],ctx.api.DEFAULTS.width);
+const referenceSample=ctx.api.experimentResult({...ctx.api.DEFAULTS,width:10,size:5},'contact');
+assert.equal(referenceSample.status,'reference');assert.ok(Number.isFinite(referenceSample.depth));
+console.log('Experiment presets, model comparison and sweep result classification passed.');

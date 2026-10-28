@@ -122,3 +122,17 @@ the precise reference configuration; treating D0 as free rim span is explicitly
 a model assumption pending confirmation. The UI and JSON now distinguish
 nominal diameter, actual rim span 2R, and the complete meridional profile arc
 through the pole (2S). That profile arc is not the helical wire length L0.
+
+## Experiment bench
+
+Six synthetic anatomy presets, session-memory scenario collection with JSON
+roundtrip, and same-size other-model overlay are available. Parameter sweeps
+sample 15 evenly spaced values while holding other inputs fixed. Invalid anatomy
+samples are skipped; fallback silhouettes appear as red crosses and are never
+connected into successful-model curves. Rings mark >0.5 mm changes between
+adjacent valid points; this heuristic depends on sample spacing and is not a
+clinical threshold. Changes invalidate old sweep results. Sweeps can be cancelled
+between samples and exported with baseline settings and per-sample status.
+
+Clinical calibration preparation is documented in CALIBRATION.md. No real case
+data have been loaded, and the departure solver has not been altered by this step.
