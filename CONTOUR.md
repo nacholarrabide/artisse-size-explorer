@@ -179,3 +179,27 @@ Desktop uses two columns: editable controls and a sticky simulation/results stac
 The stack is bounded by viewport height and scrolls internally for longer results;
 phones use ordinary document flow. Calculated outputs appear below Simulation,
 labelled read-only. Braid assumptions, experiment bench and methods start collapsed.
+
+## v0.4: consistent contact reference
+The adapted solver now computes L0 from the free quadratic cap r=R0(1-t²),
+z=h0(1-t)² using the same arc-uniform twist integration as the adapted geometry.
+The legacy ellipse remains a separate hypothesis with its original wire budget.
+The angle control follows the selected reference: contact tan(alpha)=pi*n*D0/S0;
+ellipse tan(alpha)=2n/q. Old JSON parameters are accepted and recalculated, not
+replayed as old results. Earlier numeric examples describe v0.3.
+Tests verify free-depth recovery without a constraining wall, linear length
+scaling across all catalogue sizes and angle round trips.
+For width 7, height 8, equator 4, neck 4.5, q=.35, n=.5, depths before/after:
+C7 2.824/2.534; C9 8.438/8.084; C11 11.753/11.394; C14 16.107/15.714 mm.
+This fixes reference consistency but does not resolve excessive elongation.
+Fixed-twist compression sensitivity and discrete departure selection remain.
+
+## Future standalone repository
+Current source: https://github.com/nacholarrabide/artisse-size-explorer
+Contour calculations are embedded in contour.html (geometry script), with tests
+in tests/contour.test.cjs; there is no separately packaged calculation library.
+User requested a future dedicated GitHub project, tentatively Contour Sizing Tester
+(repository suggestion: contour-sizing-tester). Do not create it as part of v0.4.
+When authorized, extract the pure model, preserve history/provenance, tests,
+versioned scenario handling, standalone UI, and deployment handoff. Keep clinical
+data outside the public repository. Do not move or alter the original Artisse app.

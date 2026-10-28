@@ -35,7 +35,9 @@ la disposición sigue el flujo normal. Verificá ambos temas, contraste, leyenda
 debe alterar escenarios ni resultados. Las fuentes corporativas tienen alternativas
 locales y no requieren descargas externas.
 Conservá la interfaz en inglés y todas las advertencias de modelo sintético no
-validado. No modificar las ecuaciones durante este despliegue.
+validado. No modificar las ecuaciones durante este despliegue. La versión actual es
+contour-cup-0.4: referencia cuadrática coherente para contacto; la elongación
+excesiva aún no está resuelta. No presentar esta revisión como validación física.
 
 El código fuente se mantiene en su repo. En el proyecto destino, incorporá un procedimiento
 reproducible para copiar/publicar una versión explícita y verificar su checksum;

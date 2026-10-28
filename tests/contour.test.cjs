@@ -4,7 +4,7 @@ const assert = require('node:assert/strict');
 const html = fs.readFileSync('contour.html', 'utf8');
 const source = html.match(/<script id="geometry">([\s\S]*?)<\/script>/)[1];
 const ctx = vm.createContext({});
-vm.runInContext(source + '\nthis.api={referenceBraidAngle,turnsFromAngle,radiusAt,wireLength,solveCup,validateState,catalogMatch,CATALOG,DEFAULTS,solveContact,contactGeometry,contactLengths,wallSlope,readScenario,PRESETS,sweepRange,experimentResult,QUICK_PRESETS,quickPresetState};', ctx);
+vm.runInContext(source + '\nthis.api={referenceContactLength,referenceBraidAngle,turnsFromAngle,radiusAt,wireLength,solveCup,validateState,catalogMatch,CATALOG,DEFAULTS,solveContact,contactGeometry,contactLengths,wallSlope,readScenario,PRESETS,sweepRange,experimentResult,QUICK_PRESETS,quickPresetState};', ctx);
 const {radiusAt,wireLength,solveCup,validateState,catalogMatch,CATALOG} = ctx.api;
 const DEFAULTS={...ctx.api.DEFAULTS,profile:'ellipse'};
 const near=(a,b,tol=1e-8)=>assert.ok(Math.abs(a-b)<tol, `${a} != ${b}`);
@@ -128,3 +128,14 @@ for(const preset of ctx.api.QUICK_PRESETS){
 console.log('Three visual presets: centered equator, no default overlay and visible finite profiles passed.');
 
 for(const ratio of [.15,.35,.65])for(const turns of [0,.15,.5,1.5])near(ctx.api.turnsFromAngle(ctx.api.referenceBraidAngle({ratio,turns}),ratio),turns);
+
+// A non-constraining wall must recover the same free quadratic cup exactly.
+for(const size of [5,7,9,11,14]){
+ const s={...ctx.api.DEFAULTS,width:size,neck:size,height:14,equator:7,rim:7};
+ const r=solveContact(s,size);
+ assert.ok(r.ok);near(r.h,size*s.ratio,1e-6);near(r.detach,7);
+ near(r.L0,ctx.api.referenceContactLength(size,s.ratio,s.turns),1e-9);
+ near(r.L0/size,ctx.api.referenceContactLength(1,s.ratio,s.turns),1e-9);
+ near(ctx.api.turnsFromAngle(ctx.api.referenceBraidAngle(s),s.ratio,s.profile),s.turns);
+}
+console.log('Consistent contact reference: free-depth recovery, scale invariance and angle conversion passed.');
