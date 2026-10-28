@@ -109,3 +109,16 @@ new default roundness setting. Exports use model version contour-cup-0.3.
 
 Additional tests cover undersized silhouettes, gap measurements, fully internal
 cups, visible search-failure fallbacks and several curvature bounds.
+
+
+## Diameter interpretation and undersized colour
+
+Undersized cups and their rim-gap annotations are entirely red, including in
+comparison mode (dashed line still identifies the comparison). Other profiles
+retain segment-level contact/conflict colours.
+
+Stryker labels nominal sizes as device diameters. The source does not establish
+the precise reference configuration; treating D0 as free rim span is explicitly
+a model assumption pending confirmation. The UI and JSON now distinguish
+nominal diameter, actual rim span 2R, and the complete meridional profile arc
+through the pole (2S). That profile arc is not the helical wire length L0.
