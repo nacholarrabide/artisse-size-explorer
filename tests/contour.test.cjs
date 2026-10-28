@@ -4,7 +4,7 @@ const assert = require('node:assert/strict');
 const html = fs.readFileSync('contour.html', 'utf8');
 const source = html.match(/<script id="geometry">([\s\S]*?)<\/script>/)[1];
 const ctx = vm.createContext({});
-vm.runInContext(source + '\nthis.api={radiusAt,wireLength,solveCup,validateState,catalogMatch,CATALOG,DEFAULTS,solveContact,contactGeometry,contactLengths,wallSlope,readScenario,PRESETS,sweepRange,experimentResult};', ctx);
+vm.runInContext(source + '\nthis.api={radiusAt,wireLength,solveCup,validateState,catalogMatch,CATALOG,DEFAULTS,solveContact,contactGeometry,contactLengths,wallSlope,readScenario,PRESETS,sweepRange,experimentResult,QUICK_PRESETS,quickPresetState};', ctx);
 const {radiusAt,wireLength,solveCup,validateState,catalogMatch,CATALOG} = ctx.api;
 const DEFAULTS={...ctx.api.DEFAULTS,profile:'ellipse'};
 const near=(a,b,tol=1e-8)=>assert.ok(Math.abs(a-b)<tol, `${a} != ${b}`);
@@ -118,3 +118,13 @@ const bounds=ctx.api.sweepRange(ctx.api.DEFAULTS,'neck');near(bounds[1],ctx.api.
 const referenceSample=ctx.api.experimentResult({...ctx.api.DEFAULTS,width:10,size:5},'contact');
 assert.equal(referenceSample.status,'reference');assert.ok(Number.isFinite(referenceSample.depth));
 console.log('Experiment presets, model comparison and sweep result classification passed.');
+
+for(const preset of ctx.api.QUICK_PRESETS){
+ const s=ctx.api.quickPresetState(preset),main=solveCup(s,s.size),overlay=solveCup(s,s.compare);
+ validateState(s);assert.equal(s.profile,'contact');assert.ok(main.ok&&!main.reference);
+ assert.ok(main.pole>=0);assert.ok(main.penetration<=1e-6);
+ assert.ok(overlay.ok&&!overlay.reference,'Comparison must also adapt to the wall');
+ assert.ok(overlay.points.some(p=>p.contact));assert.ok(overlay.relativeError<1e-9);
+ assert.equal(catalogMatch(CATALOG.find(d=>d.size===s.size),s),true);
+}
+console.log('Three visual presets: primary cup inside sac, catalogue match and adapted next-size overlay passed.');

@@ -136,3 +136,17 @@ between samples and exported with baseline settings and per-sample status.
 
 Clinical calibration preparation is documented in CALIBRATION.md. No real case
 data have been loaded, and the departure solver has not been altered by this step.
+
+## Visual quick presets
+
+Three clickable SVG anatomy thumbnails sit above the main explorer. They reset
+all model assumptions to defaults and load primary/next-size pairs C5/C7, C7/C9,
+and C9/C11. H/W ratios are 2.0, 1.5 and about 1.1. Primary configurations are
+synthetic, within catalogue ranges and contained above the neck in the current
+model. This does not establish clinical suitability. The larger comparison is
+allowed to cross the neck and serves as a contrast, not an endorsed alternative.
+Both sizes run through the selected solver independently; secondary contact and
+conflict segments retain their dashed style and are now colour-coded too.
+
+DEPLOY_CONTOUR_PROMPT.md contains a handoff prompt for the Angioseg project.
+No production deployment is performed by these changes.
