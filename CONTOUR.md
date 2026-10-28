@@ -140,13 +140,13 @@ data have been loaded, and the departure solver has not been altered by this ste
 ## Visual quick presets
 
 Three clickable SVG anatomy thumbnails sit above the main explorer. They reset
-all model assumptions to defaults and load primary/next-size pairs C5/C7, C7/C9,
-and C9/C11. H/W ratios are 2.0, 1.5 and about 1.1. Primary configurations are
-synthetic, within catalogue ranges and contained above the neck in the current
-model. This does not establish clinical suitability. The larger comparison is
-allowed to cross the neck and serves as a contrast, not an endorsed alternative.
-Both sizes run through the selected solver independently; secondary contact and
-conflict segments retain their dashed style and are now colour-coded too.
+model assumptions and turn comparison off, selecting C5, C7 and C9 respectively.
+Their width/height dimensions are 4.2/6.8, 6.4/7.8 and 8.4/8 mm; the equator is
+at half the sac height in all three. Neck widths remain 2.2, 4 and 4.5 mm.
+These are synthetic exploration geometries, not selected fits: catalogue warnings,
+neck crossing and reference fallback remain visible when applicable. Comparisons
+can be enabled manually; both profiles are independently solved and the secondary
+profile stays dashed, including contact and conflict segments. Both poles are labelled.
 
 DEPLOY_CONTOUR_PROMPT.md contains a handoff prompt for the Angioseg project.
 No production deployment is performed by these changes.

@@ -120,11 +120,9 @@ assert.equal(referenceSample.status,'reference');assert.ok(Number.isFinite(refer
 console.log('Experiment presets, model comparison and sweep result classification passed.');
 
 for(const preset of ctx.api.QUICK_PRESETS){
- const s=ctx.api.quickPresetState(preset),main=solveCup(s,s.size),overlay=solveCup(s,s.compare);
- validateState(s);assert.equal(s.profile,'contact');assert.ok(main.ok&&!main.reference);
- assert.ok(main.pole>=0);assert.ok(main.penetration<=1e-6);
- assert.ok(overlay.ok&&!overlay.reference,'Comparison must also adapt to the wall');
- assert.ok(overlay.points.some(p=>p.contact));assert.ok(overlay.relativeError<1e-9);
- assert.equal(catalogMatch(CATALOG.find(d=>d.size===s.size),s),true);
+ const s=ctx.api.quickPresetState(preset),main=solveCup(s,s.size);
+ validateState(s);assert.equal(s.profile,'contact');assert.ok(main.ok);
+ assert.equal(s.compare,0);near(s.equator,s.height/2);near(s.rim,s.equator);
+ assert.ok(main.points.every(p=>Number.isFinite(p.r)&&Number.isFinite(p.z)));
 }
-console.log('Three visual presets: primary cup inside sac, catalogue match and adapted next-size overlay passed.');
+console.log('Three visual presets: centered equator, no default overlay and visible finite profiles passed.');

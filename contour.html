@@ -12,7 +12,7 @@
 <header><div><div class="eyebrow">Geometry lab · v0.3</div><h1>Contour explorer</h1></div><span class="tag">Synthetic model · uncalibrated</span></header>
 <main>
 <p class="intro">Explore how a braided cup changes with aneurysm geometry. Catalogue sizes are published data; shape and wire twist are editable assumptions. For research, not clinical sizing.</p>
-<div id="quickPresets" class="preset-grid" aria-label="Synthetic anatomy examples"></div><p class="small">Illustrative synthetic geometries, not clinical sizing recommendations. H/W = sac height / maximum width. Selecting a card resets model assumptions and overlays the next nominal size.</p>
+<div id="quickPresets" class="preset-grid" aria-label="Synthetic anatomy examples"></div><p class="small">Illustrative synthetic geometries, not clinical sizing recommendations. H/W = sac height / maximum width. Selecting a card resets model assumptions and turns comparison off.</p>
 <div class="layout">
 <aside class="panel controls" aria-label="Parameters">
 <section><h2>01 / Aneurysm</h2>
@@ -163,9 +163,9 @@ function sweepRange(s,key){return {width:[2,12],equator:[.2,s.height-.2],neck:[1
 function experimentResult(s,profile){const r=solveCup({...s,profile},s.size);return {profile,status:!r.ok?'failed':r.reference?'reference':'solved',depth:r.h??null,pole:r.pole??null,departure:r.detach??null,wallDescent:r.contactFraction??null,poleRadius:r.poleRadius??null,referenceReason:r.referenceReason??r.reason??null};}
 
 const QUICK_PRESETS=[
- {label:'Tall sac',size:5,compare:7,width:3.4,height:6.8,equator:5.4,neck:2.2},
- {label:'Ovoid sac',size:7,compare:9,width:5.2,height:7.8,equator:6.2,neck:4},
- {label:'Near-unit aspect ratio',size:9,compare:11,width:7.5,height:8,equator:6.8,neck:4.5}
+ {label:'Tall sac',size:5,compare:0,width:4.2,height:6.8,equator:3.4,neck:2.2},
+ {label:'Ovoid sac',size:7,compare:0,width:6.4,height:7.8,equator:3.9,neck:4},
+ {label:'Near-unit aspect ratio',size:9,compare:0,width:8.4,height:8,equator:4,neck:4.5}
 ];
 function quickPresetState(p){return validateState({...DEFAULTS,...Object.fromEntries(['size','compare','width','height','equator','neck'].map(k=>[k,p[k]])),rim:p.equator});}
 function catalogMatch(d,s){return s.width>=d.width[0]&&s.width<=d.width[1]&&s.neck>=d.neck[0]&&s.neck<=d.neck[1];}
@@ -203,8 +203,8 @@ for(const [i,p] of QUICK_PRESETS.entries()){
  for(let j=0;j<=80;j++){const z=s.height*j/80;points.push([radiusAt(z,s),z]);}
  const outline=[...points,...points.slice().reverse().map(([r,z])=>[-r,z])];
  const path=outline.map(([r,z],j)=>(j?'L':'M')+X(r).toFixed(2)+' '+Y(z).toFixed(2)).join(' ')+' Z';
- button.innerHTML='<svg viewBox="0 0 95 105" aria-hidden="true"><path d="'+path+'" fill="#eff5f6" stroke="#526873" stroke-width="1.5"/><path d="M5 '+Y(s.equator)+'H90" stroke="#006c70" stroke-dasharray="3 3"/><path d="M5 90H90" stroke="#8c6a43" stroke-dasharray="3 3"/></svg><div><strong>'+p.label+'</strong><span>C'+p.size+' + C'+p.compare+' · H/W '+(p.height/p.width).toFixed(1)+'</span><span>'+p.width.toFixed(1)+' × '+p.height.toFixed(1)+' mm · neck '+p.neck.toFixed(1)+' mm</span></div>';
- button.onclick=()=>{state=quickPresetState(p);$('message').textContent='Synthetic preset loaded; both sizes use the wall-contact model.';render();};$('quickPresets').append(button);
+ button.innerHTML='<svg viewBox="0 0 95 105" aria-hidden="true"><path d="'+path+'" fill="#eff5f6" stroke="#526873" stroke-width="1.5"/><path d="M5 '+Y(s.equator)+'H90" stroke="#006c70" stroke-dasharray="3 3"/><path d="M5 90H90" stroke="#8c6a43" stroke-dasharray="3 3"/></svg><div><strong>'+p.label+'</strong><span>C'+p.size+' · H/W '+(p.height/p.width).toFixed(1)+'</span><span>'+p.width.toFixed(1)+' × '+p.height.toFixed(1)+' mm · neck '+p.neck.toFixed(1)+' mm</span></div>';
+ button.onclick=()=>{state=quickPresetState(p);$('message').textContent='Synthetic preset loaded; comparison is off.';render();};$('quickPresets').append(button);
 }
 let sweepGeneration=0,sweepData=null,sessionScenarios=[];
 function invalidateSweep(){sweepGeneration++;sweepData=null;$('sweepPlot').hidden=$('sweepCaption').hidden=true;$('exportSweep').disabled=true;$('runSweep').disabled=false;$('cancelSweep').disabled=true;$('sweepStatus').textContent='Configuration changed. Run a new sweep; other parameters will stay fixed.';}

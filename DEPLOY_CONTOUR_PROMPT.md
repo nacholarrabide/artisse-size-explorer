@@ -65,7 +65,7 @@ que proxy, cookies, redirecciones y políticas de seguridad no anulan la protecc
    existente y recargá/reiniciá solo el servicio necesario. Verificá desde el
    dominio externo tanto acceso autorizado como denegado; una prueba localhost
    sola no confirma el despliegue externo.
-6. En navegador, verificá los tres presets (C5+C7, C7+C9, C9+C11), sliders,
+6. En navegador, verificá los tres presets (C5, C7, C9, sin comparación inicial), sliders,
    adaptación de ambas copas, barridos, JSON y SVG. Confirmá que los experimentos
    funcionan en el navegador sin enviar sus datos al servidor.
 7. Comprobá que login, interfaz y salud de Angioseg siguen funcionando. Registrá
