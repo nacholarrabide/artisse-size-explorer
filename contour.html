@@ -20,6 +20,15 @@
 [data-theme="stryker"] input[type=range]{accent-color:#c48b00}
 @media(max-width:700px){.header-actions{justify-content:flex-end}}
 [data-theme="stryker"] .key{border-color:#4c7d7a}[data-theme="stryker"] .key.wall{border-color:#707674}[data-theme="stryker"] .key.compare{border-color:#526bc0}[data-theme="stryker"] .key[style*="f0b45d"]{border-color:#a76a00!important}[data-theme="stryker"] .key[style*="ff8585"]{border-color:#b33731!important}
+
+.layout{grid-template-columns:310px minmax(0,1fr)}
+.simulation-column{position:sticky;top:16px;max-height:calc(100dvh - 32px);overflow:auto;min-width:0;scrollbar-gutter:stable;border-radius:14px}
+.simulation-column .view{margin-bottom:12px}
+.simulation-column #diagram{height:min(46vh,460px);min-height:220px;width:100%}
+.simulation-column .results{display:block}
+#metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 16px}
+#metrics>p{grid-column:1/-1}.metric strong{font-size:21px}.metric:first-of-type{padding-top:14px}
+@media(max-width:700px){.simulation-column{position:static;max-height:none;overflow:visible;order:0}.simulation-column #diagram{height:auto;min-height:0}#metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
 </style>
 </head>
 <body>
@@ -42,22 +51,22 @@
 <label for="mode">Rim position</label><select id="mode"><option value="equator">At the equator</option><option value="manual">Adjustable height</option></select>
 <div class="control" id="rimControl" hidden><label for="rim">Rim height <output id="rimOut"></output></label><input id="rim" type="range" min="0.2" max="5.8" step="0.1" value="3"></div>
 <p class="small">The aperture follows local sac width, up to the nominal device diameter. Rim position is imposed, not a predicted equilibrium.</p></section>
-<section><details open style="margin:0;padding:0;border:0"><summary>Braid exploration · model assumptions</summary>
+<section><details style="margin:0;padding:0;border:0"><summary>Braid exploration · model assumptions</summary>
 <div class="control"><label for="ratio">Free depth / diameter <output id="ratioOut"></output></label><input id="ratio" type="range" min="0.15" max="0.65" step="0.01" value="0.35"></div>
 <div class="control"><label for="turns">Pole-to-rim twist (turns) <output id="turnsOut"></output></label><input id="turns" type="range" min="0" max="1.5" step="0.05" value="0.5"></div>
 <div class="control"><label for="braidAngle">Reference rim angle from axis <output id="braidAngleOut"></output></label><input id="braidAngle" type="range" min="0" max="83" step="0.1"><p class="small">Local wire angle at the free reference rim, not a constant angle over the cup. 0° is axial; 90° is circumferential. Changes the twist parameter: tan(α) = 2n/q.</p></div>
 <div class="toolbar" aria-label="Twist examples"><button type="button" data-twist="0.15">n = 0.15</button><button type="button" data-twist="0.3">n = 0.30</button><button type="button" data-twist="0.5">n = 0.50 · baseline</button><button type="button" data-twist="0.75">n = 0.75</button></div><p class="small">Try lower twist to explore reduced elongation in this model. Higher angles do not necessarily shorten the cup. Each change defines a new reference wire budget; it is not deformation of the same fixed wire. Free depth / diameter also controls elongation. Wall departure may jump between solutions.</p>
 <div class="control"><label for="minPoleRadius">Minimum pole radius <output id="minPoleRadiusOut"></output></label><input id="minPoleRadius" type="range" min="0.02" max="0.5" step="0.01" value="0.1"><p class="small">In wall-contact mode, limits curvature near the pole in addition to a horizontal tangent. A geometric assumption, not a physical force.</p></div><p class="small">Synthetic settings shared by all sizes, not measured Contour properties. An idealised wire length is conserved; forces and two-layer mechanics are not modelled.</p></details></section>
 </aside>
-<section class="panel view" aria-label="Visualisation"><div class="view-head"><h2>Longitudinal section</h2><span class="small">Equal axis scale</span></div>
+<div class="simulation-column"><section class="panel view" aria-label="Simulation"><div class="view-head"><h2>Simulation</h2><span class="small">Equal axis scale</span></div>
 <div class="legend"><span><i class="key wall"></i>Sac</span><span><i class="key"></i>Free segment</span><span><i class="key" style="border-color:#f0b45d"></i>Wall contact</span><span><i class="key compare"></i>Comparison</span><span><i class="key" style="border-color:#ff8585"></i>Undersized / geometric conflict</span></div>
 <svg id="diagram" viewBox="0 0 600 540" role="img" aria-labelledby="diagramTitle diagramDesc"></svg>
 <p class="small" style="padding:0 10px">Idealised outer profile. The proximal point is the geometric pole, not the marker. Amber: wall contact; circles: departure. Red: the entire undersized cup and its rim gaps, or segments outside the sac / below the neck plane. Horizontal dashed lines: rim-to-wall gaps.</p>
 </section>
-<aside class="panel results" aria-label="Results"><div><h2>03 / Configuration</h2><div id="metrics"></div><div id="status" role="status" aria-live="polite"></div><div id="comparisonInfo" class="small"></div></div><div><h2 style="margin-top:20px">Published ranges</h2><p class="small">Sac width / neck width, in mm. Highlighted: both measurements within the published range.</p><div id="catalog" class="catalog"></div><p class="small">Matching catalogue ranges does not establish device fit.</p></div></aside>
+<aside class="panel results" aria-label="Results"><div><h2>Simulation results</h2><p class="small">Calculated outputs · read-only</p><div id="metrics"></div><div id="status" role="status" aria-live="polite"></div><div id="comparisonInfo" class="small"></div></div><div><h2 style="margin-top:20px">Published ranges</h2><p class="small">Sac width / neck width, in mm. Highlighted: both measurements within the published range.</p><div id="catalog" class="catalog"></div><p class="small">Matching catalogue ranges does not establish device fit.</p></div></aside></div>
 </div>
 <div class="toolbar"><button id="reset">Reset</button><button id="exportJson">Save scenario JSON</button><button id="importButton">Open scenario JSON</button><input id="importJson" class="hidden-file" type="file" accept=".json,application/json" aria-label="Scenario file"><button id="exportSvg">Export SVG figure</button></div><div id="message" role="status"></div>
-<details id="experiments" open><summary>Experiment bench · synthetic scenarios</summary>
+<details id="experiments"><summary>Experiment bench · synthetic scenarios</summary>
 <p class="small">Compare hypotheses on the same anatomy. These presets and sweeps are synthetic, not fitted to implanted devices. Changing the configuration clears previous sweep results.</p>
 <div class="toolbar"><label for="preset">Anatomy preset</label><select id="preset" style="width:auto"><option value="default">Default</option><option value="wide">Wide and shallow</option><option value="tall">Tall and narrow</option><option value="narrow">Narrow neck</option><option value="wideNeck">Wide neck</option><option value="high">High equator</option></select><button id="loadPreset">Load preset</button><button id="compareModels">Compare both models · same size</button></div>
 <div class="toolbar"><button id="remember">Keep current scenario in this session</button><select id="savedScenarios" style="width:auto" aria-label="Saved session scenarios"><option value="">No saved session scenarios</option></select><button id="restoreSaved">Restore selected</button><button id="exportSession">Export session JSON</button></div>

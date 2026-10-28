@@ -164,7 +164,7 @@ requested locally with system fallbacks; no proprietary font files are bundled
 or fetched. SVG colours follow the theme, including exported figures.
 
 ## Braid exploration controls
-Model assumptions are open initially. Twist quick buttons (0.15, 0.30, 0.50,
+Model assumptions are collapsed initially. Twist quick buttons (0.15, 0.30, 0.50,
 0.75 turns) and a coupled reference-rim angle slider expose existing hypotheses.
 At the free elliptical rim, tan(alpha) = 2n/q, measured from the axial tangent;
 this is not a constant braid angle or a measured Contour property. Changing q
@@ -173,3 +173,9 @@ Changing n recalculates L0, so comparisons represent different reference designs
 not unwinding one fixed wire. Example with default C9 anatomy: depths for those
 four n values are 5.518, 6.985, 9.209 and 12.435 mm. Contact-search transitions
 can also change depth. Default model values and equations remain unchanged.
+
+## Simulation layout
+Desktop uses two columns: editable controls and a sticky simulation/results stack.
+The stack is bounded by viewport height and scrolls internally for longer results;
+phones use ordinary document flow. Calculated outputs appear below Simulation,
+labelled read-only. Braid assumptions, experiment bench and methods start collapsed.

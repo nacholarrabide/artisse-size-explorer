@@ -29,7 +29,9 @@ paneles #0F1A2E y #111E36, texto #EAF2FF, secundario #B9C7E6 y acento #16C6D2,
 con tipografía ui-sans-serif/system-ui y tarjetas redondeadas de 14 px. Confirmá
 los tokens del proyecto destino y mantené coherencia sin añadir fuentes remotas.
 Conservá el botón de tema AngioSeg / Stryker-inspired y su preferencia local.
-Verificá ambos temas, contraste, leyenda y SVG exportado; el cambio de tema no
+Verificá la ventana Simulation fija durante el scroll en escritorio, resultados
+de solo lectura debajo y secciones avanzadas inicialmente plegadas. En móvil
+la disposición sigue el flujo normal. Verificá ambos temas, contraste, leyenda y SVG exportado; el cambio de tema no
 debe alterar escenarios ni resultados. Las fuentes corporativas tienen alternativas
 locales y no requieren descargas externas.
 Conservá la interfaz en inglés y todas las advertencias de modelo sintético no
