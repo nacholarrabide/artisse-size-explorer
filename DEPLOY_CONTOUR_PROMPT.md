@@ -28,6 +28,10 @@ La apariencia usa como referencia los estilos locales de AngioSeg: fondo #0B1220
 paneles #0F1A2E y #111E36, texto #EAF2FF, secundario #B9C7E6 y acento #16C6D2,
 con tipografía ui-sans-serif/system-ui y tarjetas redondeadas de 14 px. Confirmá
 los tokens del proyecto destino y mantené coherencia sin añadir fuentes remotas.
+Conservá el botón de tema AngioSeg / Stryker-inspired y su preferencia local.
+Verificá ambos temas, contraste, leyenda y SVG exportado; el cambio de tema no
+debe alterar escenarios ni resultados. Las fuentes corporativas tienen alternativas
+locales y no requieren descargas externas.
 Conservá la interfaz en inglés y todas las advertencias de modelo sintético no
 validado. No modificar las ecuaciones durante este despliegue.
 

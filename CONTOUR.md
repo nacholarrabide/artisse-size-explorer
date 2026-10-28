@@ -154,3 +154,11 @@ No production deployment is performed by these changes.
 The dark palette follows local AngioSeg web/src/index.css tokens, with system
 sans typography matching its Tailwind sans default. No external fonts are loaded.
 The user confirmed AngioSeg as the destination project.
+
+## Appearance switch
+The header toggles AngioSeg / Stryker-inspired, persisted locally when storage is
+available. It does not change model parameters. Light theme uses #FFB500 and
+white from https://www.stryker.com/ar/es/index.html (inspected 2026-10-28).
+The site's custom Futura for Stryker and Humanist 712 for Stryker families are
+requested locally with system fallbacks; no proprietary font files are bundled
+or fetched. SVG colours follow the theme, including exported figures.
