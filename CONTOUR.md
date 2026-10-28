@@ -1,10 +1,10 @@
-# Contour geometry explorer v0.1
+# Contour geometry explorer v0.2
 
 Open `contour.html` directly in a browser (offline), or serve this directory with
 `python3 -m http.server 8765 --bind 127.0.0.1` and visit `/contour.html`.
 No dependencies or build. This is a separate implementation; Artisse pages are unchanged.
 
-## Model
+## Original ellipse model
 
 Synthetic axisymmetric single-envelope cup, with r=R sin(pi u/2),
 z=zp+h(1-cos(pi u/2)), phi=2 pi n u, u in [0,1]. Reference wire length
@@ -29,12 +29,50 @@ JSON export includes model version, units, parameters, source and derived result
 Import validates parameters and recomputes results (ignores imported results).
 SVG export contains visible experimental-use text and scenario metadata.
 
+## Wall-following model (default in v0.2)
+
+The profile follows the actual sac wall from the rim to a searched detachment
+height, then follows a quadratic Bezier cap to the proximal pole:
+P0=(rA(zd),zd), P1=(rA(zd)-a*rA'(zd),zd-a), P2=(0,zd-a).
+This enforces geometric tangent continuity (G1, not curvature continuity),
+a horizontal tangent at the pole, and a monotonically narrowing free cap.
+Degenerate caps with a zero terminal tangent are excluded.
+
+The same reference wire budget L0 from the original model is retained. On the
+adapted shape, total twist 2*pi*n is distributed uniformly per meridional arc
+length S. Integrate sqrt(1+(r*2*pi*n/S)^2) ds over wall AND free cap; solve for a.
+This is a different twist-distribution hypothesis from the ellipse's uniform
+parameter-angle law. Do not interpret shape differences as contact mechanics alone.
+
+Search 61 detachment heights from the requested minimum wall descent to the
+neck, starting no higher than the equator. Each height has 16 depth brackets;
+roots are bisected without assuming global length monotonicity. Only the first
+sampled feasible configuration is chosen. Simpson integration uses 256 intervals
+per segment, splitting the wall at the equator; admissible roots are refined
+at 1024 intervals. Search results can change discretely with sliders.
+
+Free-cap penetration is checked at 601 points, with a 1e-6 mm radial tolerance.
+This is sampled feasibility, not a continuous nonpenetration proof. Below the
+neck, no arterial boundary is invented; crossing remains visibly flagged.
+No solution means none found in this particular family/search, not physical
+impossibility. The minimum wall descent slider sets a lower bound on vertical
+contact distance / rim height, not an adhesion or friction coefficient.
+
+Amber marks the wall-following segment, circles mark departure, and the metrics
+separate contact and free wire length. The numerical residual measures algebraic
+closure only, not experimental accuracy. Old v0.1 JSON scenarios import into the
+ellipse mode; v0.2 exports include the profile and minimum contact setting.
+
 ## Verification
 
 Run `node tests/contour.test.cjs`. Checks cover exact circular arc length at zero
 twist, free-state recovery, length conservation across 198 feasible combinations,
 unsupported overexpansion, wall collision, neck crossing, manual placement,
-catalogue intervals and malformed scenario parameters.
+catalogue intervals and malformed scenario parameters. An additional 12 contact
+scenarios verify independent 4096-interval integration (absolute length error
+below 2e-6 mm), tangent joins, contact tracking, 10,001-point free-cap clearance,
+monotonic radius, minimum contact settings, and old-scenario migration. Also tests
+search failure for insufficient wire and nominal limits along the wall path.
 
 ## Data provenance and limitations
 
