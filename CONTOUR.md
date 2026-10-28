@@ -162,3 +162,14 @@ white from https://www.stryker.com/ar/es/index.html (inspected 2026-10-28).
 The site's custom Futura for Stryker and Humanist 712 for Stryker families are
 requested locally with system fallbacks; no proprietary font files are bundled
 or fetched. SVG colours follow the theme, including exported figures.
+
+## Braid exploration controls
+Model assumptions are open initially. Twist quick buttons (0.15, 0.30, 0.50,
+0.75 turns) and a coupled reference-rim angle slider expose existing hypotheses.
+At the free elliptical rim, tan(alpha) = 2n/q, measured from the axial tangent;
+this is not a constant braid angle or a measured Contour property. Changing q
+keeps n fixed and updates alpha. Changing alpha updates n within existing bounds.
+Changing n recalculates L0, so comparisons represent different reference designs,
+not unwinding one fixed wire. Example with default C9 anatomy: depths for those
+four n values are 5.518, 6.985, 9.209 and 12.435 mm. Contact-search transitions
+can also change depth. Default model values and equations remain unchanged.

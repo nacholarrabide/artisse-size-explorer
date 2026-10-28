@@ -4,7 +4,7 @@ const assert = require('node:assert/strict');
 const html = fs.readFileSync('contour.html', 'utf8');
 const source = html.match(/<script id="geometry">([\s\S]*?)<\/script>/)[1];
 const ctx = vm.createContext({});
-vm.runInContext(source + '\nthis.api={radiusAt,wireLength,solveCup,validateState,catalogMatch,CATALOG,DEFAULTS,solveContact,contactGeometry,contactLengths,wallSlope,readScenario,PRESETS,sweepRange,experimentResult,QUICK_PRESETS,quickPresetState};', ctx);
+vm.runInContext(source + '\nthis.api={referenceBraidAngle,turnsFromAngle,radiusAt,wireLength,solveCup,validateState,catalogMatch,CATALOG,DEFAULTS,solveContact,contactGeometry,contactLengths,wallSlope,readScenario,PRESETS,sweepRange,experimentResult,QUICK_PRESETS,quickPresetState};', ctx);
 const {radiusAt,wireLength,solveCup,validateState,catalogMatch,CATALOG} = ctx.api;
 const DEFAULTS={...ctx.api.DEFAULTS,profile:'ellipse'};
 const near=(a,b,tol=1e-8)=>assert.ok(Math.abs(a-b)<tol, `${a} != ${b}`);
@@ -126,3 +126,5 @@ for(const preset of ctx.api.QUICK_PRESETS){
  assert.ok(main.points.every(p=>Number.isFinite(p.r)&&Number.isFinite(p.z)));
 }
 console.log('Three visual presets: centered equator, no default overlay and visible finite profiles passed.');
+
+for(const ratio of [.15,.35,.65])for(const turns of [0,.15,.5,1.5])near(ctx.api.turnsFromAngle(ctx.api.referenceBraidAngle({ratio,turns}),ratio),turns);
