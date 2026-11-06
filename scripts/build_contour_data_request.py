@@ -194,7 +194,7 @@ def build():
         "Priority is a usable mapping from nominal size and aneurysm dimensions to the deployed device shape.",
         [
             "For each SKU, provide the measured free-state outer diameter, cup height or depth, radial profile, marker position, manufacturing tolerances, and measurement conditions.",
-            "Provide a lookup table or validated function for deployment across the recommended range of maximum equatorial width and major and minor neck diameters. Desired outputs are deployed diameter, cup depth, neck-plane footprint, distal penetration, proximal protrusion, eccentricity, and residual separation between layers.",
+            "Provide a lookup table or validated function for deployment across the recommended range of maximum equatorial width and major and minor neck diameters. Desired outputs are the device's maximum outer diameter after deployment (measured at its widest cross-section), cup depth, neck-plane footprint, distal penetration, proximal protrusion, eccentricity, and residual separation between layers.",
             "Please include sample number and variability. CAD is welcome, but a CSV of radial profiles and deployed measurements would be sufficient."
         ],
     )
