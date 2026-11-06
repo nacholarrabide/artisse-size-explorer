@@ -19,9 +19,10 @@ def build_measurement_diagram():
     width, height = 2200, 420
     image = Image.new("RGB", (width, height), "white")
     draw = ImageDraw.Draw(image)
-    regular = ImageFont.truetype("/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf", 30)
-    small = ImageFont.truetype("/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf", 25)
-    bold = ImageFont.truetype("/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf", 28)
+    # Liberation Sans Narrow is the installed Arial Narrow-compatible face.
+    regular = ImageFont.truetype("/usr/share/fonts/truetype/liberation/LiberationSansNarrow-Regular.ttf", 30)
+    small = ImageFont.truetype("/usr/share/fonts/truetype/liberation/LiberationSansNarrow-Regular.ttf", 25)
+    bold = ImageFont.truetype("/usr/share/fonts/truetype/liberation/LiberationSansNarrow-Bold.ttf", 28)
     teal = "#0D9488"
     teal_light = "#99D5CF"
     gray = "#6B7280"
