@@ -304,10 +304,10 @@ def build():
     )
     set_font(r)
 
-    add_bullet(doc, "Please confirm that these specifications remain correct for every current SKU and correct any inaccuracies.")
-    add_bullet(doc, "Please identify differences in wire count, wire diameter, braid pattern, materials, mesh density, or free shape between device sizes.")
-    add_bullet(doc, "Please confirm whether the current 0.021 inch 5-9 mm implants are geometrically and mechanically equivalent to the earlier 0.027 inch versions, and identify relevant design revisions.")
-    add_bullet(doc, "Please confirm that the published sizing ranges are current and provide the applicable IFU or sizing-chart revision.")
+    add_bullet(doc, "Confirm these specifications for all current SKUs and correct any inaccuracies.")
+    add_bullet(doc, "Identify size-dependent differences in wire count or diameter, braid, materials, mesh density, or free shape.")
+    add_bullet(doc, "Confirm whether current 0.021 inch 5-9 mm implants are geometrically and mechanically equivalent to earlier 0.027 inch versions; identify relevant revisions.")
+    add_bullet(doc, "Confirm that published sizing ranges are current and provide the applicable IFU or sizing-chart revision.")
 
     add_group(
         doc,
@@ -315,16 +315,15 @@ def build():
         "Geometry and deformation",
         None,
         [
-            "For each SKU, provide the measured free-state outer diameter, cup height or depth, radial profile, marker position, manufacturing tolerances, and measurement conditions.",
+            "For each SKU, provide free-state diameter, cup depth, radial profile, marker position, measurement conditions, and manufacturing tolerances.",
             "Provide a lookup table or validated function for deployment across the recommended range of maximum equatorial width and major and minor neck diameters, using the dimensional definitions shown above.",
-            "Please include sample number and variability. CAD is welcome, but a CSV of radial profiles and deployed measurements would be sufficient."
+            "For each condition, state the number of independent devices tested, deployment repeats per device, and manufacturing lots represented; give between-device and between-lot variability (mean, SD, range, and tolerances). CAD is welcome; a CSV of radial profiles and deployed measurements is sufficient."
         ],
         diagram_path=diagram_path,
         diagram_note=(
-            "Maximum deployed diameter is the widest outer span after release; cup depth is the rim-to-deepest-point distance; "
-            "neck-plane footprint is the outline and area projected over the ostium; distal penetration and proximal protrusion "
-            "are measured from the neck plane into the sac and parent vessel; eccentricity is the offset between device and neck "
-            "centers; residual layer separation is the maximum final gap between mesh layers."
+            "Diameter is the widest span after release; cup depth is the rim-to-deepest-point distance; footprint is projected "
+            "ostium coverage; distal and proximal distances are neck-plane extensions into the sac and parent vessel; eccentricity "
+            "is device-to-neck center offset; layer separation is the maximum final interlayer gap."
         ),
     )
 
@@ -334,9 +333,9 @@ def build():
         "Expected deployment performance",
         None,
         [
-            "Report neck area covered, percentage coverage, maximum uncovered peripheral gap, apposition, and protrusion into the parent vessel.",
-            "Provide the expected or acceptable ranges for opening and contact force, migration resistance, and layer separation. If numerical force data cannot be shared, a recommended, acceptable, borderline, or unacceptable classification for each size–anatomy combination would be useful.",
-            "Define the quantitative or visual signs of inadequate opening, instability, undersizing, and excessive oversizing, including the persistent teardrop or double-layer configuration."
+            "For each tested or modeled size-anatomy combination, give expected values and target, acceptable, or unacceptable limits for neck area and percentage covered, maximum peripheral gap, apposition, and parent-vessel protrusion; define how each is assessed.",
+            "Indicate whether opening or contact force, migration resistance, and interlayer separation are measured, modeled, or considered in design validation, sizing guidance, or routine practice. For each, define the method, units or scale, test conditions, and expected or acceptable limits.",
+            "If numerical data are unavailable, provide qualitative criteria and visual signs of inadequate opening, instability, or under- or oversizing (including persistent teardrop or double-layer appearance), and classify relevant combinations as recommended, acceptable, borderline, or unacceptable."
         ],
     )
 
@@ -346,10 +345,10 @@ def build():
         "Clinical sizing and acceptance rules",
         None,
         [
-            "Define how maximum equatorial width and neck dimensions should be measured, including imaging modality, projections, irregular or elliptical necks, rounding, and measurement uncertainty.",
+            "Define how maximum equatorial width and neck dimensions are measured in official guidance and routine clinical practice: modality, projections, irregular or elliptical necks, rounding, uncertainty, and how physicians reconcile discrepancies.",
             "Explain which variable takes precedence and the target and maximum acceptable oversizing. Please include boundary examples such as width/neck 5.0/4.5 mm, 7.0/5.5 mm, and 8.0/7.0 mm, where two sizes appear eligible.",
-            "State how aneurysm height, angulation, branches arising from the neck, lobulation, or partial thrombosis modify selection or exclude treatment.",
-            "Provide pre-detachment criteria for adequate coverage, apposition, protrusion, marker position, layer separation, stability, branch patency, and contrast stasis, together with rules for redeploying, upsizing, downsizing, or abandoning Contour."
+            "State whether lobulated or partially thrombosed aneurysms remain suitable, and how height, angulation, neck branches, lobulation, or thrombus alter sizing or contraindicate Contour.",
+            "Provide pre-detachment acceptance criteria for coverage, apposition, protrusion, marker position, layer separation, stability, branch patency, and contrast stasis, and rules for redeployment, size change, or abandoning Contour."
         ],
     )
 
@@ -358,7 +357,7 @@ def build():
     r = p.add_run("Preferred delivery format  ")
     set_font(r, size=8.7, bold=True)
     r = p.add_run(
-        "Current IFU and sizing algorithm plus tabular data with units, test conditions, sample number, variability, and tolerances. Normalized or categorical data are acceptable where detailed design data are confidential."
+        "Current IFU/sizing algorithm and tabular data. Normalized or categorical data are acceptable if detailed design data are confidential."
     )
     set_font(r, size=8.7, color="404040")
 
