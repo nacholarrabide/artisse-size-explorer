@@ -1,4 +1,5 @@
 from pathlib import Path
+import tempfile
 
 from docx import Document
 from docx.enum.section import WD_SECTION
@@ -7,10 +8,113 @@ from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 from docx.shared import Inches, Pt, RGBColor
+from PIL import Image, ImageDraw, ImageFont
 
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / "docs" / "contour_neurovascular_system_data_request.docx"
+
+
+def build_measurement_diagram():
+    width, height = 2200, 420
+    image = Image.new("RGB", (width, height), "white")
+    draw = ImageDraw.Draw(image)
+    regular = ImageFont.truetype("/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf", 30)
+    small = ImageFont.truetype("/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf", 25)
+    bold = ImageFont.truetype("/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf", 28)
+    teal = "#0D9488"
+    teal_light = "#99D5CF"
+    gray = "#6B7280"
+    pale = "#E5E7EB"
+    black = "#111827"
+
+    def cubic(p0, p1, p2, p3, steps=80):
+        points = []
+        for i in range(steps + 1):
+            t = i / steps
+            u = 1 - t
+            points.append((
+                u**3*p0[0] + 3*u*u*t*p1[0] + 3*u*t*t*p2[0] + t**3*p3[0],
+                u**3*p0[1] + 3*u*u*t*p1[1] + 3*u*t*t*p2[1] + t**3*p3[1],
+            ))
+        return points
+
+    def arrow_head(point, direction, size=13, color=gray):
+        x, y = point
+        dx, dy = direction
+        length = max((dx*dx + dy*dy) ** 0.5, 1)
+        dx, dy = dx/length, dy/length
+        px, py = -dy, dx
+        base_x, base_y = x - dx*size, y - dy*size
+        draw.polygon([
+            (x, y),
+            (base_x + px*size*0.52, base_y + py*size*0.52),
+            (base_x - px*size*0.52, base_y - py*size*0.52),
+        ], fill=color)
+
+    def double_arrow(p1, p2, color=gray, line_width=3, head=13):
+        draw.line([p1, p2], fill=color, width=line_width)
+        arrow_head(p1, (p1[0]-p2[0], p1[1]-p2[1]), head, color)
+        arrow_head(p2, (p2[0]-p1[0], p2[1]-p1[1]), head, color)
+
+    # Left panel: cross-section through the device and aneurysm neck.
+    draw.text((28, 12), "CROSS-SECTION", font=bold, fill=black)
+    neck_y = 292
+    for x in range(75, 1510, 30):
+        draw.line((x, neck_y, x+16, neck_y), fill=gray, width=3)
+    draw.text((82, neck_y+9), "neck plane", font=small, fill=gray)
+    draw.text((1320, 16), "SAC", font=small, fill=gray)
+    draw.text((1260, 374), "PARENT VESSEL", font=small, fill=gray)
+
+    outer = cubic((260, 102), (380, 235), (610, 310), (765, 318), 45)
+    outer += cubic((765, 318), (920, 310), (1150, 235), (1270, 102), 45)[1:]
+    inner = cubic((292, 118), (430, 228), (620, 286), (765, 296), 45)
+    inner += cubic((765, 296), (910, 286), (1100, 228), (1238, 118), 45)[1:]
+    draw.line(outer, fill=teal, width=9, joint="curve")
+    draw.line(inner, fill=teal_light, width=7, joint="curve")
+    draw.ellipse((751, 304, 779, 332), fill=teal, outline=black, width=2)
+
+    double_arrow((260, 64), (1270, 64), color=black, head=15)
+    label = "maximum deployed diameter"
+    bbox = draw.textbbox((0, 0), label, font=regular)
+    draw.text(((1530-(bbox[2]-bbox[0]))/2, 18), label, font=regular, fill=black)
+
+    double_arrow((690, 102), (690, 318), color=gray, head=12)
+    draw.text((480, 185), "cup depth", font=regular, fill=black)
+
+    double_arrow((1350, 102), (1350, neck_y), color=gray, head=12)
+    draw.text((1375, 150), "distal", font=regular, fill=black)
+    draw.text((1375, 182), "penetration", font=regular, fill=black)
+
+    double_arrow((1435, neck_y), (1435, 326), color=gray, head=9)
+    draw.text((1365, 312), "proximal", font=small, fill=black)
+    draw.text((1365, 340), "protrusion", font=small, fill=black)
+
+    double_arrow((405, 180), (428, 198), color=gray, head=7)
+    draw.line((405, 190, 215, 230), fill=gray, width=2)
+    draw.text((28, 224), "residual layer", font=small, fill=black)
+    draw.text((28, 252), "separation", font=small, fill=black)
+
+    # Right panel: projection onto the aneurysm ostium.
+    draw.line((1570, 24, 1570, 392), fill=pale, width=3)
+    draw.text((1600, 12), "NECK-PLANE VIEW", font=bold, fill=black)
+    neck_box = (1650, 86, 2140, 348)
+    footprint_box = (1730, 112, 2075, 330)
+    draw.ellipse(neck_box, outline=gray, width=4)
+    draw.ellipse(footprint_box, fill="#D8F0ED", outline=teal, width=7)
+    neck_center = (1895, 217)
+    # Exaggerate the offset marker for legibility while keeping the footprint position faithful.
+    device_center = (1960, 226)
+    draw.ellipse((neck_center[0]-7, neck_center[1]-7, neck_center[0]+7, neck_center[1]+7), fill=gray)
+    draw.ellipse((device_center[0]-8, device_center[1]-8, device_center[0]+8, device_center[1]+8), fill=teal)
+    double_arrow(neck_center, device_center, color=black, head=8)
+    draw.text((1848, 250), "eccentricity", font=small, fill=black)
+    draw.line((2070, 145, 2150, 105), fill=teal, width=3)
+    draw.text((1810, 54), "neck-plane footprint", font=regular, fill=black)
+
+    out = Path(tempfile.gettempdir()) / "contour_measurement_diagram.png"
+    image.save(out, dpi=(300, 300))
+    return out
 
 
 def set_cell_margins(cell, top=70, start=90, bottom=70, end=90):
@@ -90,14 +194,31 @@ def add_bullet(document, text, bold_lead=None):
     return p
 
 
-def add_group(document, number, title, purpose, items):
+def add_group(document, number, title, purpose, items, diagram_path=None, diagram_note=None):
     p = document.add_paragraph(style="Group Heading")
     r = p.add_run(f"{number}  {title}")
     set_font(r, size=10.5, bold=True)
 
-    p = document.add_paragraph(style="Compact Body")
-    r = p.add_run(purpose)
-    set_font(r, size=9.0, color="404040")
+    if purpose:
+        p = document.add_paragraph(style="Compact Body")
+        r = p.add_run(purpose)
+        set_font(r, size=9.0, color="404040")
+
+    if diagram_path is not None:
+        p = document.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p.paragraph_format.space_before = Pt(1)
+        p.paragraph_format.space_after = Pt(1)
+        p.paragraph_format.keep_with_next = True
+        inline = p.add_run().add_picture(str(diagram_path), width=Inches(7.02))
+        inline._inline.docPr.set("descr", "Contour measurement definitions in cross-section and neck-plane views")
+        if diagram_note:
+            p = document.add_paragraph(style="Compact Body")
+            p.paragraph_format.space_after = Pt(1)
+            r = p.add_run("Definitions  ")
+            set_font(r, size=8.25, bold=True)
+            r = p.add_run(diagram_note)
+            set_font(r, size=8.25, color="404040")
 
     for item in items:
         add_bullet(document, item)
@@ -105,6 +226,7 @@ def add_group(document, number, title, purpose, items):
 
 def build():
     OUTPUT.parent.mkdir(parents=True, exist_ok=True)
+    diagram_path = build_measurement_diagram()
     doc = Document()
     section = doc.sections[0]
     section.top_margin = Inches(0.48)
@@ -164,9 +286,8 @@ def build():
 
     p = doc.add_paragraph(style="Compact Body")
     r = p.add_run(
-        "We are developing a continuous sizing model for the Contour Neurovascular System. "
-        "The request below focuses on the minimum information needed to represent device geometry, "
-        "expected deployment performance, and clinical size selection without requiring proprietary manufacturing details."
+        "We are developing a continuous sizing model for Contour and request the minimum non-proprietary information "
+        "needed to represent device geometry, deployment performance, and clinical size selection."
     )
     set_font(r, size=9.35)
 
@@ -184,26 +305,33 @@ def build():
 
     add_bullet(doc, "Please confirm that these specifications remain correct for every current SKU and correct any inaccuracies.")
     add_bullet(doc, "Please identify differences in wire count, wire diameter, braid pattern, materials, mesh density, or free shape between device sizes.")
-    add_bullet(doc, "Please clarify whether the current 0.021 inch versions of the 5, 7, and 9 mm devices have the same implant geometry and mechanical behavior as the earlier 0.027 inch versions, and list any relevant design generations or revisions.")
-    add_bullet(doc, "Please confirm that the sizing ranges currently published by Stryker are the latest approved recommendations and provide the applicable IFU or sizing-chart revision date.")
+    add_bullet(doc, "Please confirm whether the current 0.021 inch 5-9 mm implants are geometrically and mechanically equivalent to the earlier 0.027 inch versions, and identify relevant design revisions.")
+    add_bullet(doc, "Please confirm that the published sizing ranges are current and provide the applicable IFU or sizing-chart revision.")
 
     add_group(
         doc,
         "1",
         "Geometry and deformation",
-        "Priority is a usable mapping from nominal size and aneurysm dimensions to the deployed device shape.",
+        None,
         [
             "For each SKU, provide the measured free-state outer diameter, cup height or depth, radial profile, marker position, manufacturing tolerances, and measurement conditions.",
-            "Provide a lookup table or validated function for deployment across the recommended range of maximum equatorial width and major and minor neck diameters. Desired outputs are the device's maximum outer diameter after deployment (measured at its widest cross-section), cup depth, neck-plane footprint, distal penetration, proximal protrusion, eccentricity, and residual separation between layers.",
+            "Provide a lookup table or validated function for deployment across the recommended range of maximum equatorial width and major and minor neck diameters, using the dimensional definitions shown above.",
             "Please include sample number and variability. CAD is welcome, but a CSV of radial profiles and deployed measurements would be sufficient."
         ],
+        diagram_path=diagram_path,
+        diagram_note=(
+            "Maximum deployed diameter is the widest outer span after release; cup depth is the rim-to-deepest-point distance; "
+            "neck-plane footprint is the outline and area projected over the ostium; distal penetration and proximal protrusion "
+            "are measured from the neck plane into the sac and parent vessel; eccentricity is the offset between device and neck "
+            "centers; residual layer separation is the maximum final gap between mesh layers."
+        ),
     )
 
     add_group(
         doc,
         "2",
         "Expected deployment performance",
-        "For the same test conditions, we would like to distinguish an appropriate deployment from under- or oversizing.",
+        None,
         [
             "Report neck area covered, percentage coverage, maximum uncovered peripheral gap, apposition, and protrusion into the parent vessel.",
             "Provide the expected or acceptable ranges for opening and contact force, migration resistance, and layer separation. If numerical force data cannot be shared, a recommended, acceptable, borderline, or unacceptable classification for each size–anatomy combination would be useful.",
@@ -215,7 +343,7 @@ def build():
         doc,
         "3",
         "Clinical sizing and acceptance rules",
-        "Priority is the decision logic taught to operators, especially where published size ranges overlap.",
+        None,
         [
             "Define how maximum equatorial width and neck dimensions should be measured, including imaging modality, projections, irregular or elliptical necks, rounding, and measurement uncertainty.",
             "Explain which variable takes precedence and the target and maximum acceptable oversizing. Please include boundary examples such as width/neck 5.0/4.5 mm, 7.0/5.5 mm, and 8.0/7.0 mm, where two sizes appear eligible.",
@@ -229,7 +357,7 @@ def build():
     r = p.add_run("Preferred delivery format  ")
     set_font(r, size=8.7, bold=True)
     r = p.add_run(
-        "Current IFU and sizing algorithm plus CSV or equivalent tabular data with units, test conditions, sample number, mean, variability, and tolerances. Normalized or categorical data would still be valuable where detailed design data are confidential."
+        "Current IFU and sizing algorithm plus tabular data with units, test conditions, sample number, variability, and tolerances. Normalized or categorical data are acceptable where detailed design data are confidential."
     )
     set_font(r, size=8.7, color="404040")
 
